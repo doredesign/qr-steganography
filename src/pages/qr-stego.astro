@@ -1,0 +1,1029 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title="QR Code Steganography"
+	description="Hide secret messages in QR codes using error correction capacity"
+>
+	<div class="stack gap-20">
+		<main class="wrapper about">
+			<!-- Hero Section -->
+			<header class="hero">
+				<h1 class="title">QR Code Steganography</h1>
+				<p class="tagline">
+					Hide secret messages in plain sight using QR code error correction capacity
+				</p>
+			</header>
+
+			<!-- Encode Section -->
+			<section class="tool-section">
+				<h2 class="section-title">🔐 Encode</h2>
+				<p class="section-subtitle">Create a QR code with a hidden message</p>
+
+				<div class="encoder-container">
+					<div class="form-section">
+						<div class="input-group">
+							<label for="primary">Primary Message (visible to all)</label>
+							<input
+								type="text"
+								id="primary"
+								placeholder="https://example.com"
+								value="https://example.com"
+							/>
+						</div>
+
+						<div class="input-group">
+							<label for="secondary">Secondary Message (hidden)</label>
+							<input
+								type="text"
+								id="secondary"
+								placeholder="SECRET123"
+								value=""
+							/>
+						</div>
+
+						<div class="capacity-info">
+							<span id="capacity-text">Checking capacity...</span>
+						</div>
+
+						<button id="encode-btn" class="btn-primary">Generate QR Code</button>
+						<div id="error-message" class="error"></div>
+					</div>
+
+					<div class="qr-display">
+						<div id="qr-container"></div>
+						<div class="qr-actions" style="display: none;">
+							<button id="download-btn" class="btn-secondary">Download PNG</button>
+							<button id="copy-btn" class="btn-secondary">Copy SVG</button>
+						</div>
+						<div id="scan-test-result" class="scan-test" style="display: none;"></div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Decode Section -->
+			<section class="tool-section">
+				<h2 class="section-title">🔍 Decode</h2>
+				<p class="section-subtitle">Extract the hidden message from a QR code</p>
+
+				<div class="decoder-container">
+					<div class="upload-section">
+						<button id="decode-last-btn" class="btn-secondary" style="display: none;">
+						Decode Last Generated QR
+					</button>
+
+					<h3>Upload QR Code</h3>
+
+						<div class="upload-area" id="upload-area">
+							<input
+								type="file"
+								id="file-input"
+								accept="image/*"
+								style="display: none;"
+							/>
+							<div class="upload-prompt">
+								<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+									<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<p>Click to upload or drag and drop</p>
+								<p class="hint">PNG, JPG or any image format</p>
+							</div>
+							<canvas id="preview-canvas" style="display: none;"></canvas>
+						</div>
+
+						<button id="decode-btn" class="btn-primary" disabled>Decode QR Code</button>
+						<div id="decode-error-message" class="error"></div>
+					</div>
+
+					<div class="results-section">
+						<h3>Results</h3>
+
+						<div class="result-box">
+							<h4>Primary Message</h4>
+							<div id="primary-result" class="result-text">No QR code decoded yet</div>
+						</div>
+
+						<div class="result-box">
+							<h4>Secondary Message (Hidden)</h4>
+							<div id="secondary-result" class="result-text">No hidden message found</div>
+						</div>
+
+						<div class="metadata" id="metadata" style="display: none;">
+							<h4>Metadata</h4>
+							<div id="metadata-content"></div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- How It Works -->
+			<section class="content-section">
+				<h2>How It Works</h2>
+				<p>
+					QR codes include error correction data that allows them to be read even when partially damaged.
+					This tool exploits that error correction capacity to hide a secondary message within a normal QR code.
+				</p>
+				<ul class="features">
+					<li>✅ Primary message readable by all standard QR scanners</li>
+					<li>🔒 Secondary message only extractable with this decoder</li>
+					<li>📊 Capacity: ~7 bytes for typical URLs</li>
+					<li>🎯 Uses high error correction level (Level H, 30%)</li>
+				</ul>
+			</section>
+
+			<!-- Use Cases -->
+			<section class="content-section">
+				<h2>Use Cases</h2>
+				<div class="use-cases">
+					<div class="use-case">
+						<h4>🎮 Scavenger Hunts</h4>
+						<p>Hide bonus clues and point values that only players with the decoder can access.</p>
+					</div>
+					<div class="use-case">
+						<h4>💼 Product Authentication</h4>
+						<p>Embed warranty codes and batch numbers invisible to counterfeiters.</p>
+					</div>
+					<div class="use-case">
+						<h4>🎫 Event Invitations</h4>
+						<p>Public event URL with hidden VIP access codes for special guests.</p>
+					</div>
+					<div class="use-case">
+						<h4>🔐 Two-Factor Auth</h4>
+						<p>Public session ID with hidden cryptographic challenge token.</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Technical Details -->
+			<section class="content-section technical">
+				<h2>Technical Details</h2>
+				<p>
+					This implementation uses the Nayuki QR Code generator library and exploits Reed-Solomon
+					error correction capacity. The hidden message is encoded by intentionally flipping specific
+					data modules within the error correction threshold, distributed using prime number stepping
+					to avoid visual clustering.
+				</p>
+				<div class="tech-specs">
+					<div class="spec">
+						<strong>Error Correction:</strong> Level H (30%)
+					</div>
+					<div class="spec">
+						<strong>Safety Margin:</strong> 7% (empirically tested)
+					</div>
+					<div class="spec">
+						<strong>Encoding:</strong> UTF-8 with 16-bit checksum
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+</BaseLayout>
+
+<style>
+	/* Hero */
+	.hero {
+		text-align: center;
+		padding: 2rem 0 3rem;
+	}
+
+	.title {
+		font-size: 3rem;
+		background: var(--gradient-accent-orange);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 1rem;
+	}
+
+	.tagline {
+		font-size: 1.25rem;
+		color: var(--gray-300);
+		max-width: 600px;
+		margin: 0 auto;
+	}
+
+	/* Tool Sections */
+	.tool-section {
+		padding: 3rem 0;
+		border-top: 1px solid var(--gray-800);
+	}
+
+	.section-title {
+		font-size: 2rem;
+		margin-bottom: 0.5rem;
+		color: var(--gray-0);
+	}
+
+	.section-subtitle {
+		color: var(--gray-300);
+		margin-bottom: 2rem;
+	}
+
+	/* Encode Section */
+	.encoder-container {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+		margin-top: 2rem;
+	}
+
+	.form-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.input-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	label {
+		font-weight: 600;
+		color: var(--gray-0);
+	}
+
+	input {
+		padding: 0.75rem;
+		border: 2px solid var(--gray-800);
+		border-radius: 0.5rem;
+		background: var(--gray-999);
+		color: var(--gray-0);
+		font-size: 1rem;
+	}
+
+	.capacity-info {
+		padding: 1rem;
+		background: var(--gray-999);
+		border-radius: 0.5rem;
+		font-size: 0.9rem;
+		color: var(--gray-300);
+	}
+
+	.btn-primary, .btn-secondary {
+		padding: 0.75rem 1.5rem;
+		border: none;
+		border-radius: 0.5rem;
+		font-size: 1rem;
+		cursor: pointer;
+		font-weight: 600;
+		transition: all 0.2s;
+	}
+
+	.btn-primary {
+		background: var(--accent-regular);
+		color: var(--gray-999);
+	}
+
+	.btn-primary:hover:not(:disabled) {
+		background: var(--accent-dark);
+	}
+
+	.btn-primary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.btn-secondary {
+		background: var(--gray-800);
+		color: var(--gray-0);
+	}
+
+	.btn-secondary:hover {
+		background: var(--gray-700);
+	}
+
+	.qr-display {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		padding: 2rem;
+		background: var(--gray-999);
+		border-radius: 1rem;
+		min-height: 300px;
+		justify-content: center;
+	}
+
+	#qr-container {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	#qr-container :global(svg) {
+		max-width: 100%;
+		height: auto;
+	}
+
+	.qr-actions {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.error {
+		color: #ff4444;
+		font-size: 0.9rem;
+		min-height: 1.5rem;
+	}
+
+	.scan-test {
+		margin-top: 1rem;
+		font-size: 0.9rem;
+		color: var(--gray-300);
+		min-height: 1.5rem;
+		padding: 0.75rem;
+		background: var(--gray-900);
+		border-radius: 0.5rem;
+		line-height: 1.6;
+	}
+
+	/* Decode Section */
+	.decoder-container {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+		margin-top: 2rem;
+	}
+
+	.upload-section, .results-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	h3 {
+		font-size: 1.5rem;
+		color: var(--gray-0);
+		margin: 0;
+	}
+
+	h4 {
+		font-size: 1.1rem;
+		color: var(--gray-200);
+		margin: 0 0 0.5rem 0;
+	}
+
+	.upload-area {
+		border: 2px dashed var(--gray-700);
+		border-radius: 1rem;
+		padding: 2rem;
+		text-align: center;
+		cursor: pointer;
+		transition: all 0.2s;
+		background: var(--gray-999);
+		min-height: 300px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.upload-area:hover {
+		border-color: var(--accent-regular);
+		background: var(--gray-900);
+	}
+
+	.upload-area.drag-over {
+		border-color: var(--accent-regular);
+		background: var(--gray-900);
+	}
+
+	.upload-prompt {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		color: var(--gray-300);
+	}
+
+	.upload-prompt svg {
+		color: var(--accent-regular);
+	}
+
+	.upload-prompt .hint {
+		font-size: 0.85rem;
+		color: var(--gray-500);
+	}
+
+	#preview-canvas {
+		max-width: 100%;
+		height: auto;
+		border-radius: 0.5rem;
+	}
+
+	.result-box {
+		padding: 1.5rem;
+		background: var(--gray-999);
+		border-radius: 0.75rem;
+		border-left: 4px solid var(--accent-regular);
+	}
+
+	.result-text {
+		font-family: monospace;
+		color: var(--gray-0);
+		word-break: break-all;
+		padding: 0.5rem;
+		background: var(--gray-900);
+		border-radius: 0.25rem;
+	}
+
+	.metadata {
+		padding: 1rem;
+		background: var(--gray-999);
+		border-radius: 0.75rem;
+		font-size: 0.9rem;
+	}
+
+	#metadata-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		color: var(--gray-300);
+	}
+
+	/* Content Sections */
+	.content-section {
+		padding: 3rem 0;
+		border-top: 1px solid var(--gray-800);
+	}
+
+	.content-section h2 {
+		font-size: 2rem;
+		margin-bottom: 1rem;
+		color: var(--gray-0);
+	}
+
+	.content-section p {
+		color: var(--gray-300);
+		line-height: 1.6;
+		margin-bottom: 1.5rem;
+	}
+
+	.features {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.features li {
+		color: var(--gray-200);
+		font-size: 1.1rem;
+	}
+
+	.use-cases {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1.5rem;
+		margin-top: 1.5rem;
+	}
+
+	.use-case {
+		padding: 1.5rem;
+		background: var(--gray-999);
+		border-radius: 0.75rem;
+		border-left: 4px solid var(--accent-regular);
+	}
+
+	.use-case h4 {
+		color: var(--gray-0);
+		margin-bottom: 0.5rem;
+	}
+
+	.use-case p {
+		color: var(--gray-400);
+		font-size: 0.95rem;
+		margin: 0;
+	}
+
+	.technical {
+		background: var(--gray-999);
+		padding: 2rem;
+		border-radius: 1rem;
+	}
+
+	.tech-specs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem;
+		margin-top: 1.5rem;
+	}
+
+	.spec {
+		color: var(--gray-300);
+		font-size: 0.95rem;
+	}
+
+	.spec strong {
+		color: var(--gray-0);
+	}
+
+	@media (max-width: 768px) {
+		.title {
+			font-size: 2rem;
+		}
+
+		.encoder-container,
+		.decoder-container {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<script>
+	import { QRStego } from '../lib/qr-stego';
+	import jsQR from 'jsqr';
+
+	// Check if debug mode is enabled
+	const isDebugMode = () => window.location.hash === '#debug';
+
+	// === ENCODE SECTION ===
+	const primaryInput = document.getElementById('primary') as HTMLInputElement;
+	const secondaryInput = document.getElementById('secondary') as HTMLInputElement;
+	const encodeBtn = document.getElementById('encode-btn') as HTMLButtonElement;
+	const capacityText = document.getElementById('capacity-text') as HTMLSpanElement;
+	const errorMessage = document.getElementById('error-message') as HTMLDivElement;
+	const qrContainer = document.getElementById('qr-container') as HTMLDivElement;
+	const qrActions = document.querySelector('.qr-actions') as HTMLDivElement;
+	const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
+	const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement;
+	const scanTestResult = document.getElementById('scan-test-result') as HTMLDivElement;
+
+	let currentSVG = '';
+	let currentResult: any = null;
+
+	function updateCapacity() {
+		const primary = primaryInput.value;
+		const secondary = secondaryInput.value;
+
+		if (!primary) {
+			capacityText.textContent = 'Enter a primary message first';
+			return;
+		}
+
+		try {
+			const capacity = QRStego.getCapacity(primary);
+			const encoder = new TextEncoder();
+			const secondaryBytes = encoder.encode(secondary);
+			const used = secondaryBytes.length;
+
+			if (used > capacity) {
+				capacityText.textContent = `⚠️ Message too large: ${used} bytes / ${capacity} bytes max`;
+				capacityText.style.color = '#ff4444';
+			} else {
+				capacityText.textContent = `Available capacity: ${used} / ${capacity} bytes`;
+				capacityText.style.color = 'var(--gray-300)';
+			}
+		} catch (err) {
+			capacityText.textContent = 'Error calculating capacity';
+		}
+	}
+
+	primaryInput.addEventListener('input', updateCapacity);
+	secondaryInput.addEventListener('input', updateCapacity);
+	updateCapacity();
+
+	encodeBtn.addEventListener('click', () => {
+		const primary = primaryInput.value;
+		const secondary = secondaryInput.value;
+
+		errorMessage.textContent = '';
+		scanTestResult.style.display = 'none';
+
+		if (!primary) {
+			errorMessage.textContent = 'Please enter a primary message';
+			return;
+		}
+
+		try {
+			currentResult = QRStego.encode(primary, secondary);
+			currentSVG = currentResult.toSVG();
+
+			qrContainer.innerHTML = currentSVG;
+			qrActions.style.display = 'flex';
+
+			if (isDebugMode()) {
+				console.log('QR Code generated:', {
+					flippedModules: currentResult.metadata.flippedModuleCount,
+					capacityUsed: currentResult.metadata.capacityUsed + '%'
+				});
+			}
+
+			testScan();
+
+			// Show the decode last button in decode section
+			const decodeLastBtn = document.getElementById('decode-last-btn') as HTMLButtonElement;
+			if (decodeLastBtn) {
+				decodeLastBtn.style.display = 'block';
+			}
+		} catch (err: any) {
+			errorMessage.textContent = `Error: ${err.message}`;
+			qrContainer.innerHTML = '';
+			qrActions.style.display = 'none';
+		}
+	});
+
+	downloadBtn.addEventListener('click', () => {
+		const svgElement = qrContainer.querySelector('svg');
+		if (!svgElement) return;
+
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+
+		const svgWidth = parseInt(svgElement.getAttribute('width') || '400');
+		const svgHeight = parseInt(svgElement.getAttribute('height') || '400');
+
+		const scale = 4;
+		canvas.width = svgWidth * scale;
+		canvas.height = svgHeight * scale;
+
+		ctx.fillStyle = 'white';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		const svgString = new XMLSerializer().serializeToString(svgElement);
+		const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+		const url = URL.createObjectURL(svgBlob);
+		const img = new Image();
+
+		img.onload = () => {
+			ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+			canvas.toBlob((blob) => {
+				if (!blob) return;
+				const downloadUrl = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = downloadUrl;
+				a.download = 'qr-stego.png';
+				a.click();
+				URL.revokeObjectURL(downloadUrl);
+			}, 'image/png');
+
+			URL.revokeObjectURL(url);
+		};
+
+		img.src = url;
+	});
+
+	copyBtn.addEventListener('click', async () => {
+		try {
+			await navigator.clipboard.writeText(currentSVG);
+			const originalText = copyBtn.textContent;
+			copyBtn.textContent = 'Copied!';
+			setTimeout(() => {
+				copyBtn.textContent = originalText;
+			}, 2000);
+		} catch (err) {
+			if (isDebugMode()) {
+				console.error('Failed to copy:', err);
+			}
+		}
+	});
+
+	function testScan() {
+		const svgElement = qrContainer.querySelector('svg');
+		if (!svgElement || !currentResult) return;
+
+		if (isDebugMode()) {
+			console.log('=== TEST SCAN DEBUG ===');
+			console.log('QR Metadata:', {
+				size: currentResult.matrix.size,
+				version: currentResult.matrix.version,
+				flippedModules: currentResult.metadata.flippedModuleCount,
+				capacityUsed: currentResult.metadata.capacityUsed + '%',
+				secondaryLength: secondaryInput.value.length + ' chars'
+			});
+		}
+
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d', { willReadFrequently: true });
+		if (!ctx) return;
+
+		const svgWidth = parseInt(svgElement.getAttribute('width') || '400');
+		const svgHeight = parseInt(svgElement.getAttribute('height') || '400');
+
+		const testScales = [2, 3, 4];
+		let bestResult: any = null;
+
+		function tryScaleTest(scaleIndex: number) {
+			if (scaleIndex >= testScales.length) {
+				if (isDebugMode()) {
+					console.log('All scales tested. Best result:', bestResult);
+				}
+
+				if (bestResult && bestResult.data) {
+					if (bestResult.data === primaryInput.value) {
+						scanTestResult.style.display = 'none';
+						if (isDebugMode()) {
+							console.log(`✅ QR code is valid! Scans as: "${bestResult.data}" at ${bestResult.scale}x scale`);
+						}
+					} else {
+						scanTestResult.innerHTML = `⚠️ Warning: Scans as "${bestResult.data}" (expected "${primaryInput.value}")<br><small>Tested at ${bestResult.scale}x scale</small>`;
+						scanTestResult.style.color = '#ff9800';
+						scanTestResult.style.display = 'block';
+					}
+				} else {
+					const debugInfo = `
+						<div>❌ Error: QR code not readable by scanner</div>
+						<div style="font-size: 0.85em; margin-top: 0.5rem;">
+							<strong>Debug Info:</strong><br>
+							• Flipped modules: ${currentResult.metadata.flippedModuleCount}<br>
+							• Capacity used: ${currentResult.metadata.capacityUsed.toFixed(2)}%<br>
+							• Secondary message: "${secondaryInput.value}"<br>
+							• QR size: ${currentResult.matrix.size}x${currentResult.matrix.size} (v${currentResult.matrix.version})<br>
+							• Tested scales: ${testScales.join('x, ')}x<br>
+							<br>
+							<em>Tip: Try a shorter secondary message or longer primary message</em>
+						</div>
+					`;
+					scanTestResult.innerHTML = debugInfo;
+					scanTestResult.style.color = '#ff4444';
+					scanTestResult.style.display = 'block';
+					if (isDebugMode()) {
+						console.error('QR not readable at any scale:', testScales);
+					}
+				}
+				return;
+			}
+
+			const scale = testScales[scaleIndex];
+			canvas.width = svgWidth * scale;
+			canvas.height = svgHeight * scale;
+
+			ctx.fillStyle = 'white';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			const svgString = new XMLSerializer().serializeToString(svgElement);
+			const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+			const url = URL.createObjectURL(svgBlob);
+			const img = new Image();
+
+			img.onload = () => {
+				ctx.imageSmoothingEnabled = false;
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				const result = jsQR(imageData.data, canvas.width, canvas.height, {
+					inversionAttempts: 'attemptBoth'
+				});
+
+				URL.revokeObjectURL(url);
+
+				if (isDebugMode()) {
+					console.log(`Scale ${scale}x result:`, result ? `Found: "${result.data}"` : 'Not found');
+				}
+
+				if (result && result.data) {
+					if (!bestResult || result.data === primaryInput.value) {
+						bestResult = { ...result, scale };
+					}
+				}
+
+				tryScaleTest(scaleIndex + 1);
+			};
+
+			img.onerror = () => {
+				URL.revokeObjectURL(url);
+				if (isDebugMode()) {
+					console.error(`Failed to load image at scale ${scale}x`);
+				}
+				tryScaleTest(scaleIndex + 1);
+			};
+
+			img.src = url;
+		}
+
+		tryScaleTest(0);
+	}
+
+	// === DECODE SECTION ===
+	const decodeLastBtn = document.getElementById('decode-last-btn') as HTMLButtonElement;
+	const uploadArea = document.getElementById('upload-area') as HTMLDivElement;
+	const fileInput = document.getElementById('file-input') as HTMLInputElement;
+	const previewCanvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+	const decodeBtn = document.getElementById('decode-btn') as HTMLButtonElement;
+	const decodeErrorMessage = document.getElementById('decode-error-message') as HTMLDivElement;
+	const primaryResult = document.getElementById('primary-result') as HTMLDivElement;
+	const secondaryResult = document.getElementById('secondary-result') as HTMLDivElement;
+	const metadataSection = document.getElementById('metadata') as HTMLDivElement;
+	const metadataContent = document.getElementById('metadata-content') as HTMLDivElement;
+
+	let currentImageData: ImageData | null = null;
+
+	uploadArea.addEventListener('click', () => {
+		fileInput.click();
+	});
+
+	uploadArea.addEventListener('dragover', (e) => {
+		e.preventDefault();
+		uploadArea.classList.add('drag-over');
+	});
+
+	uploadArea.addEventListener('dragleave', () => {
+		uploadArea.classList.remove('drag-over');
+	});
+
+	uploadArea.addEventListener('drop', (e) => {
+		e.preventDefault();
+		uploadArea.classList.remove('drag-over');
+
+		const files = e.dataTransfer?.files;
+		if (files && files[0]) {
+			handleFile(files[0]);
+		}
+	});
+
+	fileInput.addEventListener('change', (e) => {
+		const files = (e.target as HTMLInputElement).files;
+		if (files && files[0]) {
+			handleFile(files[0]);
+		}
+	});
+
+	function handleFile(file: File) {
+		const reader = new FileReader();
+
+		reader.onload = (e) => {
+			const img = new Image();
+			img.onload = () => {
+				const ctx = previewCanvas.getContext('2d');
+				if (!ctx) return;
+
+				let width = img.width;
+				let height = img.height;
+				const minSize = 400;
+
+				if (width < minSize || height < minSize) {
+					const scale = minSize / Math.min(width, height);
+					width *= scale;
+					height *= scale;
+				}
+
+				previewCanvas.width = width;
+				previewCanvas.height = height;
+
+				ctx.imageSmoothingEnabled = false;
+				ctx.clearRect(0, 0, width, height);
+				ctx.drawImage(img, 0, 0, width, height);
+
+				currentImageData = ctx.getImageData(0, 0, width, height);
+
+				uploadArea.querySelector('.upload-prompt')!.setAttribute('style', 'display: none;');
+				previewCanvas.style.display = 'block';
+				decodeBtn.disabled = false;
+				decodeErrorMessage.textContent = '';
+			};
+
+			img.src = e.target?.result as string;
+		};
+
+		reader.readAsDataURL(file);
+	}
+
+	decodeBtn.addEventListener('click', () => {
+		if (!currentImageData) {
+			decodeErrorMessage.textContent = 'Please upload an image first';
+			return;
+		}
+
+		decodeErrorMessage.textContent = '';
+
+		try {
+			const qrResult = jsQR(
+				currentImageData.data,
+				currentImageData.width,
+				currentImageData.height,
+				{
+					inversionAttempts: 'attemptBoth'
+				}
+			);
+
+			if (!qrResult) {
+				decodeErrorMessage.textContent = 'No QR code found in image. Try uploading a clearer or larger image.';
+				return;
+			}
+
+			primaryResult.textContent = qrResult.data;
+
+			try {
+				const stegoResult = QRStego.decode(currentImageData);
+
+				secondaryResult.textContent = stegoResult.secondaryMessage || '(empty)';
+
+				metadataSection.style.display = 'block';
+				metadataContent.innerHTML = `
+					<div>Flipped modules: ${stegoResult.metadata.flippedModuleCount}</div>
+					<div>Capacity used: ${stegoResult.metadata.capacityUsed.toFixed(2)}%</div>
+					<div>EC Level: ${stegoResult.metadata.ecLevelUsed === 3 ? 'H (High)' : 'Other'}</div>
+				`;
+			} catch (err: any) {
+				secondaryResult.textContent = `No hidden message found`;
+				metadataSection.style.display = 'none';
+			}
+		} catch (err: any) {
+			decodeErrorMessage.textContent = `Error: ${err.message}`;
+		}
+	});
+
+	// Decode last generated QR button
+	decodeLastBtn.addEventListener('click', () => {
+		if (!currentResult) {
+			decodeErrorMessage.textContent = 'No QR code generated yet. Please encode a QR code first.';
+			return;
+		}
+
+		const svgElement = qrContainer.querySelector('svg');
+		if (!svgElement) {
+			decodeErrorMessage.textContent = 'No QR code found. Please generate one first.';
+			return;
+		}
+
+		decodeErrorMessage.textContent = '';
+
+		try {
+			// Convert SVG to canvas
+			const canvas = document.createElement('canvas');
+			const ctx = canvas.getContext('2d');
+			if (!ctx) {
+				decodeErrorMessage.textContent = 'Canvas not supported';
+				return;
+			}
+
+			const svgWidth = parseInt(svgElement.getAttribute('width') || '400');
+			const svgHeight = parseInt(svgElement.getAttribute('height') || '400');
+			const scale = 4;
+
+			canvas.width = svgWidth * scale;
+			canvas.height = svgHeight * scale;
+
+			ctx.fillStyle = 'white';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			const svgString = new XMLSerializer().serializeToString(svgElement);
+			const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+			const url = URL.createObjectURL(svgBlob);
+			const img = new Image();
+
+			img.onload = () => {
+				ctx.imageSmoothingEnabled = false;
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				URL.revokeObjectURL(url);
+
+				try {
+					// First get primary message with jsQR
+					const qrResult = jsQR(imageData.data, canvas.width, canvas.height, {
+						inversionAttempts: 'attemptBoth'
+					});
+
+					if (!qrResult) {
+						decodeErrorMessage.textContent = 'Could not read QR code';
+						return;
+					}
+
+					primaryResult.textContent = qrResult.data;
+
+					// Then decode steganography
+					try {
+						const stegoResult = QRStego.decode(imageData);
+
+						secondaryResult.textContent = stegoResult.secondaryMessage || '(empty)';
+
+						metadataSection.style.display = 'block';
+						metadataContent.innerHTML = `
+							<div>Flipped modules: ${stegoResult.metadata.flippedModuleCount}</div>
+							<div>Capacity used: ${stegoResult.metadata.capacityUsed.toFixed(2)}%</div>
+							<div>EC Level: ${stegoResult.metadata.ecLevelUsed === 3 ? 'H (High)' : 'Other'}</div>
+						`;
+
+						if (isDebugMode()) {
+							console.log('Decoded last generated QR:', stegoResult);
+						}
+					} catch (err: any) {
+						secondaryResult.textContent = 'No hidden message found';
+						metadataSection.style.display = 'none';
+
+						if (isDebugMode()) {
+							console.error('Stego decode error:', err);
+						}
+					}
+				} catch (err: any) {
+					decodeErrorMessage.textContent = `Error: ${err.message}`;
+				}
+			};
+
+			img.onerror = () => {
+				URL.revokeObjectURL(url);
+				decodeErrorMessage.textContent = 'Failed to load QR code image';
+			};
+
+			img.src = url;
+		} catch (err: any) {
+			decodeErrorMessage.textContent = `Error: ${err.message}`;
+		}
+	});
+</script>
